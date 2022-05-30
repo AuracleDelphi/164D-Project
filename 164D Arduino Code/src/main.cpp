@@ -101,10 +101,24 @@ double getObjTemp() {
   return(objTemp);
 }
 
-bool buttonPress(){
+bool buttonShortPress(){
   // Button pulled high, push brings low
   if (digitalRead(BUTTON) == LOW){
-    return true;
+    delay(5); //Debouncing
+    if(digitalRead(BUTTON) == LOW) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool buttonLongPress(){
+  // Button pulled high, push brings low
+  if (digitalRead(BUTTON) == LOW){
+    delay(1000); //Wait a long time before checking again
+    if(digitalRead(BUTTON) == LOW) {
+      return true;
+    }
   }
   return false;
 }
@@ -127,7 +141,7 @@ void loop() {
     delay(100);
   }
 
-  if(buttonPress()){
+  if(buttonShortPress()){
     tone(SOUND, 500); // 500 khz
     delay(100);
     noTone(SOUND);
