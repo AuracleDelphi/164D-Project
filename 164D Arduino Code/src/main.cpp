@@ -8,6 +8,7 @@
 #include "SSD1306AsciiWire.h"
 #include <Adafruit_I2CDevice.h> //Might need so oled display libraries compile
 
+
 // setup
 // functions
 // loop that runs functions
@@ -37,6 +38,10 @@ const double gain = 47.51;
 #define OLED_RESET    -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET); //Declaring the OLED name
 
+//BT Stuff
+SoftwareSerial HC06(0,1); //BEWARE: Cannot upload to uC w/ BT module connected
+
+
 void BPM_Display_setup() {  
   Serial.begin(19200); // initialize serial communication at 9600 bits per second 
 
@@ -54,6 +59,7 @@ void setup() {
   pinMode(SOUNDGND, OUTPUT);
   pinMode(BUTTON, INPUT);
   analogReference(INTERNAL); // Set ADC to 1.1V internal reference
+  HC06.begin(9600);
 }
 
 void oledDisplay(String msg) {
@@ -86,6 +92,8 @@ double getADCVoltage(int pin){
   return voltage;
   */
 }
+
+double 
 
 double getAmbTemp() {
   //Get ambient temperature in units of Celsius
@@ -124,7 +132,7 @@ bool buttonLongPress(){
   return false;
 }
 
-double getBPM(){
+double getBPM(){ //Todo: Finish
   // I'll finish copying this over from class code soon
   bpm = 0;
   return bpm;
