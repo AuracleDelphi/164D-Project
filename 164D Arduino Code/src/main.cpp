@@ -10,6 +10,7 @@
 #include <Adafruit_I2CDevice.h> //Might need so oled display libraries compile
 
 
+
 // setup
 // functions
 // loop that runs functions
@@ -32,6 +33,7 @@ const double q1 = 44.18;
 const double seeb = .01;
 const double x = 2.50;
 const double gain = 47.51;
+const double voltageOffset = 495;
 
 // OLED Stuff
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -72,6 +74,10 @@ void oledDisplay(String msg) {
   display.display();
 }
 
+bool writeBT() {
+
+}
+
 // https://www.intorobotics.com/how-to-make-accurate-adc-readings-with-arduino/?msclkid=03c3eb10d08d11ec88ef55df2fef17e3
 double getADCVoltage(int pin){
   analogReference(INTERNAL);
@@ -105,7 +111,7 @@ double getObjTemp() {
   //Get object temperature in units of Celsius
   double objVoltage = getADCVoltage(OBJ);
   double ambTemp = getAmbTemp();
-  double objTemp = pow((((objVoltage/gain)/seeb)+pow(ambTemp, 4-x)), (1/4-x));
+  double objTemp = pow(((((objVoltage-voltageOffset)/gain)/seeb)+pow(ambTemp, 4-x)), (1/(4-x)));;
   return(objTemp);
 }
 
