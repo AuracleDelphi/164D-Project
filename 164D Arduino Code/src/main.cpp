@@ -5,16 +5,24 @@
 // setup
 // functions
 // loop that runs functions
-#define MEAS A0
-#define REF A1
+#define OBJ A0
+#define AMB A1
 #define SOUND 10
 #define SOUNDGND 9
 #define BUTTON 8
-double refVoltage = 0;
-double measVoltage = 0;
+double ambVoltage = 0;
+double objVoltage = 0;
 int bpm = 0;
 int t = 0;
 int temp = 0;
+
+//Constants for temp equations
+const double p1 = -0.02613;
+const double p2 = 16.55;
+const double p2 = 5889;
+const double q1 = 44.18;
+const double SE = .01;
+const double x = 2.50;
 
 // OLED Stuff
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -58,6 +66,21 @@ double getADCVoltage(int pin){
   return voltage;
 }
 
+double getAmbTemp() {
+  //Get ambient temperature in units of Celsius
+  double ambVoltage = getADCVoltage(AMB);
+  double ambTemp = (p1*ambVoltage*ambVoltage + p2*ambVoltage + p3)/(ambVoltage + q1);
+  return(ambTemp);
+}
+
+double getObjTemp() {
+  //Get object temperature in units of Celsius
+  double objVoltage = getADCVoltage(OBJ);
+  double ambTemp = getAmbTemp();
+  double objTemp = pow(((objVoltage/SE)+pow(ambTemp, 4-x)), (1/4-x));
+  return(objTemp);
+}
+
 bool buttonPress(){
   // Button pulled high, push brings low
   if (digitalRead(BUTTON) == LOW){
@@ -78,16 +101,4 @@ double getBPM(){
 
 void loop() {
   // put your main code here, to run repeatedly:
-  if(buttonPress()){
-    //read ambient adc voltage
-    refVoltage = getADCVoltage(REF);
-    //read measurement adc voltage
-    measVoltage = getADCVoltage(MEAS);
-    //process these into temperatures
-    // TODO: SOME ACTUAL FORMULAS
-    temp = measVoltage * 10000004000
-    //display on oled
-    oledDisplay("Temp: " + String(temp))
-    //send over bluetooth
-  }
 }
