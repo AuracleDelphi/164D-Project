@@ -29,6 +29,7 @@ const double p3 = 5889;
 const double q1 = 44.18;
 const double seeb = .01;
 const double x = 2.50;
+const double gain = 47.51;
 
 // OLED Stuff
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -97,7 +98,7 @@ double getObjTemp() {
   //Get object temperature in units of Celsius
   double objVoltage = getADCVoltage(OBJ);
   double ambTemp = getAmbTemp();
-  double objTemp = pow(((objVoltage/seeb)+pow(ambTemp, 4-x)), (1/4-x));
+  double objTemp = pow((((objVoltage/gain)/seeb)+pow(ambTemp, 4-x)), (1/4-x));
   return(objTemp);
 }
 
