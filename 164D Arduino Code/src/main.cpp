@@ -25,9 +25,9 @@ int temp = 0;
 //Constants for temp equations
 const double p1 = -0.02613;
 const double p2 = 16.55;
-const double p2 = 5889;
+const double p3 = 5889;
 const double q1 = 44.18;
-const double SE = .01;
+const double seeb = .01;
 const double x = 2.50;
 
 // OLED Stuff
@@ -91,14 +91,28 @@ double getObjTemp() {
   //Get object temperature in units of Celsius
   double objVoltage = getADCVoltage(OBJ);
   double ambTemp = getAmbTemp();
-  double objTemp = pow(((objVoltage/SE)+pow(ambTemp, 4-x)), (1/4-x));
+  double objTemp = pow(((objVoltage/seeb)+pow(ambTemp, 4-x)), (1/4-x));
   return(objTemp);
 }
 
-bool buttonPress(){
+bool buttonShortPress(){
   // Button pulled high, push brings low
   if (digitalRead(BUTTON) == LOW){
-    return true;
+    delay(5); //Debouncing
+    if(digitalRead(BUTTON) == LOW) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool buttonLongPress(){
+  // Button pulled high, push brings low
+  if (digitalRead(BUTTON) == LOW){
+    delay(1000); //Wait a long time before checking again
+    if(digitalRead(BUTTON) == LOW) {
+      return true;
+    }
   }
   return false;
 }
