@@ -3,6 +3,7 @@
 #include <Adafruit_I2CDevice.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <SoftwareSerial.h>
 
 #include "SSD1306Ascii.h"
 #include "SSD1306AsciiWire.h"
@@ -92,8 +93,6 @@ double getADCVoltage(int pin){
   return voltage;
   */
 }
-
-double 
 
 double getAmbTemp() {
   //Get ambient temperature in units of Celsius
