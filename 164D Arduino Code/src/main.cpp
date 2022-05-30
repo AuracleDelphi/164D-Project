@@ -134,8 +134,6 @@ void loop() {
   }
 
   // put your main code here, to run repeatedly:
-<<<<<<< Updated upstream
-=======
   if(buttonPress()){
     tone(SOUND, 500); // 500 khz
     delay(100);
@@ -153,5 +151,4 @@ void loop() {
     //send over bluetooth
     delay(100);
   }
->>>>>>> Stashed changes
 }
