@@ -25,9 +25,9 @@ int temp = 0;
 //Constants for temp equations
 const double p1 = -0.02613;
 const double p2 = 16.55;
-const double p2 = 5889;
+const double p3 = 5889;
 const double q1 = 44.18;
-const double SE = .01;
+const double seeb = .01;
 const double x = 2.50;
 
 // OLED Stuff
@@ -66,6 +66,11 @@ void oledDisplay(String msg) {
 
 // https://www.intorobotics.com/how-to-make-accurate-adc-readings-with-arduino/?msclkid=03c3eb10d08d11ec88ef55df2fef17e3
 double getADCVoltage(int pin){
+  analogReference(INTERNAL);
+  unsigned int adcVal = analogRead(pin);
+  double voltage = adcVal/1024.0 * 1.1 * 1000; // Return voltage in mV
+  return voltage;
+  /*
   // Read 1.1V reference against AVcc
   ADMUX = _BV(REFS0) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);
   delay(2); // Wait for Vref to settle
@@ -78,6 +83,7 @@ double getADCVoltage(int pin){
   unsigned int ADCValue = analogRead(pin);
   double voltage  = (ADCValue / 1024.0) * vcc;
   return voltage;
+  */
 }
 
 double getAmbTemp() {
@@ -91,7 +97,7 @@ double getObjTemp() {
   //Get object temperature in units of Celsius
   double objVoltage = getADCVoltage(OBJ);
   double ambTemp = getAmbTemp();
-  double objTemp = pow(((objVoltage/SE)+pow(ambTemp, 4-x)), (1/4-x));
+  double objTemp = pow(((objVoltage/seeb)+pow(ambTemp, 4-x)), (1/4-x));
   return(objTemp);
 }
 
@@ -110,6 +116,8 @@ double getBPM(){
 }
 
 void loop() {
+  // put your main code here, to run repeatedly:
+ 
   // test the microcontroller (buzzer)
   bool test_buzz = false;
   if(test_buzz){
@@ -119,25 +127,20 @@ void loop() {
     delay(100);
   }
 
-  // put your main code here, to run repeatedly:
-<<<<<<< Updated upstream
-=======
   if(buttonPress()){
     tone(SOUND, 500); // 500 khz
     delay(100);
     noTone(SOUND);
     //read ambient adc voltage
-    refVoltage = getADCVoltage(REF);
+    ambVoltage = getADCVoltage(AMB);
     //read measurement adc voltage
-    measVoltage = getADCVoltage(MEAS);
-    //process these into temperatures
-    // TODO: SOME ACTUAL FORMULAS
-    temp = measVoltage * 10000004000;
+    objVoltage = getADCVoltage(OBJ);
+    //get temps
+    double objTemp = getObjTemp();
+    double ambTemp = getAmbTemp();
     //display on oled
-    oledDisplay("Temp: " + String(temp));
-    oledDisplay(String(refVoltage) + " & " + String(measVoltage));
+    oledDisplay("Ambient temp is " + String(ambTemp, 4) + " & obj temp is " + String(objTemp, 4));    
     //send over bluetooth
     delay(100);
   }
->>>>>>> Stashed changes
 }
