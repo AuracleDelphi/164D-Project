@@ -8,9 +8,6 @@ def retreiveData():
     return data
 
 while(True):
-    uInput = input("Retreive data? ")
-    if uInput == '1':
-        print(retreiveData())
-    else:
-        ser.write(b'0')
+    print(retreiveData())
+    
     
