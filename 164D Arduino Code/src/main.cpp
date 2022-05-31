@@ -74,8 +74,37 @@ void oledDisplay(String msg) {
   display.display();
 }
 
-bool writeBT() {
+bool writeBT(double objTemp, double ambTemp, double BPM, bool BPMMode) {
+  //Function to send values over bluetooth. Returns true if executed correctly.
+  if(BPMMode) {
+    String sendString = String(BPM);
+  }
+  else {
+    String sendString_obj = String(objTemp,2);
+    String sendString_amb = String(ambTemp, 2);
+    String sendString = sendstring_amb + sendString_obj;
+  }
+  if(HC06.available()) {
+    HC06.write(sendString);
+    return(true);
+  }
+  else {
+    oledDisplay("BT unavailable!");
+    delay(1000);
+    return(false);
+  }
+}
 
+string readBT() {
+  //Recieves a string value over BT.
+  if(HC06.available()) {
+    return(HC06.read());
+  }
+  else {
+    oledDisplay("BT unavailable!");
+    delay(1000);
+    return("-1");
+  }
 }
 
 // https://www.intorobotics.com/how-to-make-accurate-adc-readings-with-arduino/?msclkid=03c3eb10d08d11ec88ef55df2fef17e3
