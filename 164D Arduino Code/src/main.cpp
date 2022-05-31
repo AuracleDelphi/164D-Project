@@ -85,7 +85,7 @@ bool writeBT(double objTemp, double ambTemp, double BPM, bool BPMMode) {
     String sendString = sendstring_amb + sendString_obj;
   }
   if(HC06.available()) {
-    HC06.write(sendString);
+    HC06.print(sendString);
     return(true);
   }
   else {
@@ -95,7 +95,7 @@ bool writeBT(double objTemp, double ambTemp, double BPM, bool BPMMode) {
   }
 }
 
-string readBT() {
+int readBT() {
   //Recieves a string value over BT.
   if(HC06.available()) {
     return(HC06.read());
@@ -103,7 +103,7 @@ string readBT() {
   else {
     oledDisplay("BT unavailable!");
     delay(1000);
-    return("-1");
+    return(-1);
   }
 }
 
