@@ -346,6 +346,15 @@ void loop()
     // TODO: SKIP BPM UNTIL ITS WORKING
     // getAndDisplayBPM();
   }
+  
+  if (buttonLongPress())
+  {
+    buttonMode = !buttonMode;
+    tone(SOUND, 2000);
+    delay(100);
+    noTone(SOUND);
+  }
+
   if(buttonMode){
     if (buttonShortPress())
     {
