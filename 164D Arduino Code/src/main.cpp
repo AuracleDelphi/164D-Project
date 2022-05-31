@@ -204,6 +204,40 @@ void getAndDisplayBPM() {
      }
 }
 
+bool writeBT(double objTemp, double ambTemp, double BPM, bool BPMMode) {
+  //Function to send values over bluetooth. Returns true if executed correctly.
+  String sendString;
+  if(BPMMode) {
+    sendString = String(BPM);
+  }
+  else {
+    String sendString_obj = String(objTemp,2);
+    String sendString_amb = String(ambTemp, 2);
+    sendString = sendString_amb + sendString_obj;
+  }
+  if(HC06.available()) {
+    HC06.print(sendString);
+    return(true);
+  }
+  else {
+    oledDisplay("BT unavailable!");
+    delay(1000);
+    return(false);
+  }
+}
+
+int readBT() {
+  //Recieves a string value over BT.
+  if(HC06.available()) {
+    return(HC06.read());
+  }
+  else {
+    oledDisplay("BT unavailable!");
+    delay(1000);
+    return(-1);
+  }
+}
+
 bool writeBT() {}
 
 // https://www.intorobotics.com/how-to-make-accurate-adc-readings-with-arduino/?msclkid=03c3eb10d08d11ec88ef55df2fef17e3
@@ -300,6 +334,7 @@ void loop() {
       //display on oled
       oledDisplay("Ambient temp is " + String(ambTemp, 4) + " & obj temp is " + String(objTemp, 4));    
       //send over bluetooth
+      writeBT("Ambient temp is " + String(ambTemp, 4) + " & obj temp is " + String(objTemp, 4));
       delay(1000);
     }
   }
