@@ -1,6 +1,6 @@
 import serial
 
-ser = serial.Serial("COM4",9600, timeout = 1)
+ser = serial.Serial("COM5",9600, timeout = 1)
 
 def retreiveData():
     ser.write(b'1')
