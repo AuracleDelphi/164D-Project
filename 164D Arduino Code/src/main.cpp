@@ -92,7 +92,7 @@ void BPM_setup(){
 }
 
 void Display_setup() {  
-  Serial.begin(19200); // initialize serial communication at 9600 bits per second 
+  Serial.begin(9600); // initialize serial communication at 9600 bits per second 
 
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C); //Start the OLED display
   display.display();
@@ -238,8 +238,6 @@ int readBT() {
   }
 }
 
-bool writeBT() {}
-
 // https://www.intorobotics.com/how-to-make-accurate-adc-readings-with-arduino/?msclkid=03c3eb10d08d11ec88ef55df2fef17e3
 double getADCVoltage(int pin){
   analogReference(INTERNAL);
@@ -316,6 +314,8 @@ void loop() {
   if(irValue > threshold){ // If finger detected
     mode = "BPM";
   }
+  //TODO: SKIP BPM UNTIL ITS WORKING
+  mode = "buttonTemp";
   if(mode == "BPM"){
     getAndDisplayBPM();
   }
@@ -334,7 +334,7 @@ void loop() {
       //display on oled
       oledDisplay("Ambient temp is " + String(ambTemp, 4) + " & obj temp is " + String(objTemp, 4));    
       //send over bluetooth
-      writeBT("Ambient temp is " + String(ambTemp, 4) + " & obj temp is " + String(objTemp, 4));
+      writeBT(objTemp, ambTemp, 0, false);
       delay(1000);
     }
   }
