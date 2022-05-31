@@ -228,8 +228,12 @@ bool writeBT(double objTemp, double ambTemp, double BPM, bool BPMMode)
     String sendString_amb = String(ambTemp, 2);
     sendString = sendString_amb + sendString_obj;
   }
-  if (HC06.available())
+  if (HC06.available() > 0)
   {
+    tone(SOUND, 2000);
+    delay(100);
+    noTone(SOUND);
+    delay(100);
     HC06.print(sendString);
     return (true);
   }
@@ -328,7 +332,7 @@ bool buttonLongPress()
 void loop()
 {
   // put your main code here, to run repeatedly:
-  if (buttonLongPress)
+  if(buttonLongPress())
   {
     buttonMode = !buttonMode;
     tone(SOUND, 2000);

@@ -1,6 +1,6 @@
 import serial
 
-ser = serial.Serial("COM10",9600, timeout = 1)
+ser = serial.Serial("COM4",9600, timeout = 1)
 
 def retreiveData():
     ser.write(b'1')
@@ -8,6 +8,9 @@ def retreiveData():
     return data
 
 while(True):
-    print(retreiveData())
-    
+    uInput = input("Retreive data? ")
+    if uInput == '1':
+        print(retreiveData())
+    else:
+        ser.write(b'0')
     
