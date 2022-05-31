@@ -228,21 +228,8 @@ bool writeBT(double objTemp, double ambTemp, double BPM, bool BPMMode)
     String sendString_amb = String(ambTemp, 2);
     sendString = sendString_amb + sendString_obj;
   }
-  if (HC06.available() > 0)
-  {
-    tone(SOUND, 2000);
-    delay(100);
-    noTone(SOUND);
-    delay(100);
-    HC06.print(sendString);
-    return (true);
-  }
-  else
-  {
-    oledDisplay("BT unavailable!");
-    delay(1000);
-    return (false);
-  }
+  HC06.print(sendString);
+  return (true);
 }
 
 int readBT()
@@ -251,12 +238,6 @@ int readBT()
   if (HC06.available())
   {
     return (HC06.read());
-  }
-  else
-  {
-    oledDisplay("BT unavailable!");
-    delay(1000);
-    return (-1);
   }
 }
 
@@ -377,6 +358,8 @@ void loop()
     // display on oled
     oledDisplay("Ambient temp is " + String(ambTemp, 4) + " & obj temp is " + String(objTemp, 4));
     // send over bluetooth
-    writeBT(objTemp, ambTemp, 0, false);
+    if(readBT == '1'){
+      writeBT(objTemp, ambTemp, 0, false);
+    }
   }
 }
