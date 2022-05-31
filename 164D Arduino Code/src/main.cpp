@@ -28,12 +28,12 @@ bool buttonMode = true;
 // Constants for temp equations
 const double p1 = -0.02613;
 const double p2 = 16.55;
-const double p3 = 5889;
+const int p3 = 5889;
 const double q1 = 44.18;
 const double seeb = .01;
 const double x = 2.50;
 const double gain = 47.51;
-const double voltageOffset = 495;
+const int voltageOffset = 495;
 
 // OLED Stuff
 #define SCREEN_WIDTH 128                                                  // OLED display width, in pixels
@@ -76,8 +76,7 @@ void BPM_setup()
   if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) // Use default I2C port, 400kHz speed
   {
     oledDisplay("MAX30105 was not found. Please check wiring/power.");
-    while (1)
-      ;
+    while (1);
   }
   byte ledBrightness = 55; // Options: 0=Off to 255=50mA
   byte sampleAverage = 4;  // Options: 1, 2, 4, 8, 16, 32
@@ -299,6 +298,9 @@ bool buttonShortPress()
     delay(5); // Debouncing
     if (digitalRead(BUTTON) == LOW)
     {
+      tone(SOUND, 500); // 500hz
+      delay(100);
+      noTone(SOUND);
       return true;
     }
   }
@@ -313,6 +315,9 @@ bool buttonLongPress()
     delay(1000); // Wait a long time before checking again
     if (digitalRead(BUTTON) == LOW)
     {
+      tone(SOUND, 2000);
+      delay(100);
+      noTone(SOUND);
       return true;
     }
   }
@@ -325,9 +330,6 @@ void loop()
   if(buttonLongPress())
   {
     buttonMode = !buttonMode;
-    tone(SOUND, 2000);
-    delay(100);
-    noTone(SOUND);
   }
   particleSensor.check();
   long irValue = particleSensor.getIR(); // Reading the IR value to detect heartbeat and finger's placement on the sensor
@@ -336,27 +338,15 @@ void loop()
     // TODO: SKIP BPM UNTIL ITS WORKING
     // getAndDisplayBPM();
   }
-  
-  if (buttonLongPress())
-  {
-    buttonMode = !buttonMode;
-    tone(SOUND, 2000);
-    delay(100);
-    noTone(SOUND);
-  }
 
   if(buttonMode){
     if (buttonShortPress())
     {
-      tone(SOUND, 500); // 500 khz
-      delay(100);
-      noTone(SOUND);
       // get temps
       double objTemp = getObjTemp();
       double ambTemp = getAmbTemp();
       // display on oled
       oledDisplay("Ambient temp is " + String(ambTemp, 4) + " & obj temp is " + String(objTemp, 4));
-      // send over bluetooth
     }
   }
 
