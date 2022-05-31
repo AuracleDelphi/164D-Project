@@ -95,7 +95,7 @@ void BPM_setup()
 
 void Display_setup()
 {
-  Serial.begin(9600); // initialize serial communication at 9600 bits per second
+  //Serial.begin(9600); // initialize serial communication at 9600 bits per second
 
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // Start the OLED display
   display.display();
@@ -105,6 +105,7 @@ void Display_setup()
 void setup()
 {
   // put your setup code here, to run once:
+  HC06.begin(9600);
   Display_setup();
   BPM_setup();
   pinMode(LED_BUILTIN, OUTPUT);
@@ -113,7 +114,7 @@ void setup()
   pinMode(SOUNDGND, OUTPUT);
   pinMode(BUTTON, INPUT);
   analogReference(INTERNAL); // Set ADC to 1.1V internal reference
-  HC06.begin(9600);
+  
 }
 
 void oledDisplay(String msg)
@@ -226,9 +227,17 @@ bool writeBT(double objTemp, double ambTemp, double BPM, bool BPMMode)
   {
     String sendString_obj = String(objTemp, 2);
     String sendString_amb = String(ambTemp, 2);
-    sendString = sendString_amb + sendString_obj;
+    sendString = sendString_amb + "," + sendString_obj;
   }
-  HC06.print(sendString);
+  if(HC06.available() > 0)
+    {
+      char receive = HC06.read();
+      if(receive == '1')
+      {
+        int data = 3;
+        HC06.print(sendString);
+      }
+    }
   return (true);
 }
 
@@ -255,7 +264,7 @@ double getADCVoltage(int pin)
   ADCSRA |= _BV(ADSC); // Convert
   while (bit_is_set(ADCSRA,ADSC));
   long result = ADCL;
-  result |= ADCH<<8;
+  result |= ADCH<<8;`
   result = 1125300L / result; // Back-calculate AVcc in mV
   double vcc = result/1000.0;
   unsigned int ADCValue = analogRead(pin);
@@ -358,8 +367,7 @@ void loop()
     // display on oled
     oledDisplay("Ambient temp is " + String(ambTemp, 4) + " & obj temp is " + String(objTemp, 4));
     // send over bluetooth
-    if(readBT == '1'){
-      writeBT(objTemp, ambTemp, 0, false);
-    }
+    writeBT(objTemp, ambTemp, 0, false);
+    
   }
 }
