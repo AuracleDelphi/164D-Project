@@ -35,11 +35,10 @@ const double seeb = .01;
 const double x = 2.50;
 const double gain = 47.51;
 const int voltageOffset = 495;
-const double ambTempOffset = 3.5; //Celsius offset for ambient temp
-const double objTempOffset = -4; //Celsius offset for object temp
+const double tempOffset = 0;
 
 //Constants for ADC calculation
-const double adc_mV_offset = 4;
+const double adc_offset = 5;
 
 // OLED Stuff
 #define SCREEN_WIDTH 128                                                  // OLED display width, in pixels
@@ -261,7 +260,7 @@ double getADCVoltage(int pin)
   analogReference(INTERNAL);
   unsigned int adcVal = analogRead(pin);
   double voltage = adcVal / 1024.0 * 1.1 * 1000; // Return voltage in mV
-  return (voltage-adc_mV_offset);
+  return (voltage-5);
   /*
   // Read 1.1V reference against AVcc
   ADMUX = _BV(REFS0) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);
@@ -283,7 +282,7 @@ double getAmbTemp()
   // Get ambient temperature in units of Celsius
   double ambVoltage = getADCVoltage(AMB);
   double ambTemp = (p1 * ambVoltage * ambVoltage + p2 * ambVoltage + p3) / (ambVoltage * ambVoltage + ambVoltage*q1 + q2);
-  return (ambTemp+ambTempOffset);
+  return (ambTemp+tempOffset);
 }
 
 double getObjTemp()
@@ -292,7 +291,8 @@ double getObjTemp()
   double objVoltage = getADCVoltage(OBJ);
   double ambTemp = getAmbTemp();
   double objTemp = pow(((((objVoltage - voltageOffset) / gain) / seeb) + pow(ambTemp, 4 - x)), (1 / (4 - x)));
-  return (objTemp+objTempOffset);
+  ;
+  return (objTemp);
 }
 
 bool buttonShortPress()
