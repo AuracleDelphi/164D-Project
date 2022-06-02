@@ -140,7 +140,7 @@ void getAndDisplayBPM()
   long irValue = particleSensor.getIR(); // Reading the IR value to detect heartbeat and finger's placement on the sensor
   /** Your code goes above here: End **/
 
-  if (irValue > threshold)
+  if (irValue > threshold) // If finger detected
   { // If finger is placed and detected
     /** Your code goes below here: Start **/
     display.clearDisplay(); // Clear the display
@@ -200,7 +200,7 @@ void getAndDisplayBPM()
       /** Your code goes above here: End **/
     }
   }
-  if (irValue < threshold)
+  if (irValue < threshold) // If no finger detected
   { // If no finger is detected it inform the user and put the average BPM to 0 or it will be stored for the next measure
     beatAvg = 0;
     display.clearDisplay();
@@ -332,7 +332,7 @@ bool buttonLongPress()
 void loop()
 {
   // put your main code here, to run repeatedly:
-  if(buttonLongPress())
+  if(buttonLongPress()) // Switch modes
   {
     buttonMode = !buttonMode;
   }
@@ -341,10 +341,10 @@ void loop()
   if (irValue > threshold)
   { // If finger detected
     // TODO: SKIP BPM UNTIL ITS WORKING
-    // getAndDisplayBPM();
+    getAndDisplayBPM();
   }
 
-  if(buttonMode){
+  else if(buttonMode){
     if (buttonShortPress())
     {
       // get temps
