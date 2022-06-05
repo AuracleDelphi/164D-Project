@@ -118,7 +118,7 @@ void setup()
   pinMode(SOUND, OUTPUT);
   pinMode(SOUNDGND, OUTPUT);
   pinMode(BUTTON, INPUT);
-  analogReference(INTERNAL); // Set ADC to 1.1V internal reference
+  analogReference(EXTERNAL); // Set ADC to external reference
   
 }
 
