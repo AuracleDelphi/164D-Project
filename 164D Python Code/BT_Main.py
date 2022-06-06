@@ -13,7 +13,7 @@ def retrieveData(ser):
 def returnTemps(data):
     ambient = data[0:4]
     obj = data[6:len(data)]
-    if(ambient != '' and obj != ''):
+    if((ambient != '' and obj != '') and len(data) < 17):
         ambient = float(ambient) * 9/5 + 32
         obj = float(obj) * 9/5 + 32
     else:
@@ -41,6 +41,7 @@ def plotTemps(ambient_arr, object_arr, meas_time):
     plt.xlabel("Time (s)")
     plt.ylabel("Temperature (F)")
     plt.legend(["Ambient", "Object"])
+    plt.grid()
     plt.show()
 
 
