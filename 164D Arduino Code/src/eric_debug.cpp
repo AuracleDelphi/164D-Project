@@ -27,19 +27,19 @@ bool buttonMode = true;
 
 // Constants for temp equations
 const double p1 = -25.23;
-const double p2 = 2.717*10000;
-const double p3 = 2.169*1000000;
-const double q1 = 591.3;
-const double q2 = 1.398*10000;
+const double p2 = 4.318*1000;
+const double p3 = 5.48*1000000;
+const double q1 = 939.7;
+const double q2 = 3.531*10000;
 const double seeb = .01;
 const double x = 2.50;
-const double gain = 47.51;
-const int voltageOffset = 495;
+const double gain = 101;
+const int voltageOffset = 1000;
 const double ambTempOffset = 0; //Celsius offset for ambient temp
 const double objTempOffset = 0; //Celsius offset for object temp
 
 //Constants for ADC calculation
-const double adc_mV_offset = 4;
+const double adc_mV_offset = 0;
 
 // OLED Stuff
 #define SCREEN_WIDTH 128                                                  // OLED display width, in pixels
@@ -118,7 +118,7 @@ void setup()
   pinMode(SOUND, OUTPUT);
   pinMode(SOUNDGND, OUTPUT);
   pinMode(BUTTON, INPUT);
-  analogReference(INTERNAL); // Set ADC to 1.1V internal reference
+  analogReference(EXTERNAL); // Set ADC to external reference
   
 }
 
@@ -260,22 +260,8 @@ double getADCVoltage(int pin)
 {
   analogReference(INTERNAL);
   unsigned int adcVal = analogRead(pin);
-  double voltage = adcVal / 1024.0 * 1.1 * 1000; // Return voltage in mV
-  return (voltage-adc_mV_offset);
-  /*
-  // Read 1.1V reference against AVcc
-  ADMUX = _BV(REFS0) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);
-  delay(2); // Wait for Vref to settle
-  ADCSRA |= _BV(ADSC); // Convert
-  while (bit_is_set(ADCSRA,ADSC));
-  long result = ADCL;
-  result |= ADCH<<8;`
-  result = 1125300L / result; // Back-calculate AVcc in mV
-  double vcc = result/1000.0;
-  unsigned int ADCValue = analogRead(pin);
-  double voltage  = (ADCValue / 1024.0) * vcc;
-  return voltage;
-  */
+  double voltage = adcVal / 1024.0 * 2.226 * 1000; // Return voltage in mV
+  return (voltage+adc_mV_offset);
 }
 
 double getAmbTemp()

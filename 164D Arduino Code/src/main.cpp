@@ -27,7 +27,7 @@ bool buttonMode = true;
 
 // Constants for temp equations
 const double p1 = -25.23;
-const double p2 = 4.318*1000;
+const double p2 = 4.318*10000;
 const double p3 = 5.48*1000000;
 const double q1 = 939.7;
 const double q2 = 3.531*10000;
@@ -39,7 +39,7 @@ const double ambTempOffset = 0; //Celsius offset for ambient temp
 const double objTempOffset = 0; //Celsius offset for object temp
 
 //Constants for ADC calculation
-const double adc_mV_offset = 0;
+const double adc_mV_offset = 12;
 
 // OLED Stuff
 #define SCREEN_WIDTH 128                                                  // OLED display width, in pixels
