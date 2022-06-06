@@ -36,10 +36,11 @@ const double x = 2.50;
 const double gain = 101;
 const int voltageOffset = 1000;
 const double ambTempOffset = 2.2; //Celsius offset for ambient temp
-const double objTempOffset = -11.11; //Celsius offset for object temp
+const double objTempOffset = -17; //Celsius offset for object temp
 
 //Constants for ADC calculation
 const double adc_mV_offset = 12;
+const int integrations = 5;
 
 // OLED Stuff
 #define SCREEN_WIDTH 128                                                  // OLED display width, in pixels
@@ -258,9 +259,13 @@ int readBT()
 // https://www.intorobotics.com/how-to-make-accurate-adc-readings-with-arduino/?msclkid=03c3eb10d08d11ec88ef55df2fef17e3
 double getADCVoltage(int pin)
 {
-  analogReference(INTERNAL);
-  unsigned int adcVal = analogRead(pin);
-  double voltage = adcVal / 1024.0 * 2.226 * 1000; // Return voltage in mV
+  double adcValIntegrated = 0;
+  for(int i = 0; i < integrations; i++) {
+    unsigned int adcVal = analogRead(pin);
+    adcValIntegrated = adcValIntegrated + adcVal;
+  }
+  adcValIntegrated = adcValIntegrated / integrations;
+  double voltage = adcValIntegrated / 1024.0 * 2.226 * 1000; // Return voltage in mV
   return (voltage+adc_mV_offset);
 }
 
