@@ -31,10 +31,10 @@ def collectTemps(num, ser):
         object_arr[i] = obj
     t1 = time.time()
     meas_time = t1-t0
-    return(ambient_arr, object_arr, meas_time)
-
-def plotTemps(ambient_arr, object_arr, meas_time):
     t = np.linspace(0, meas_time, len(ambient_arr))
+    return(ambient_arr, object_arr, t)
+
+def plotTemps(ambient_arr, object_arr, t):
     plt.scatter(t, ambient_arr)
     plt.scatter(t, object_arr)
     plt.title("Temperature Measurements")
@@ -72,8 +72,9 @@ def main():
             print("Object temp voltage (mV): " + str(obj))
 
         elif(int(command) > 0 and int(command) < 1000):
-            ambient_arr, object_arr, meas_time = collectTemps(int(command), ser)
-            plotTemps(ambient_arr, object_arr, meas_time)
+            ambient_arr, object_arr, t = collectTemps(int(command), ser)
+            plotTemps(ambient_arr, object_arr, t)
+            np.savetxt("tempData.csv", (ambient_arr, object_arr, t), delimiter=",")
 
         else:
             print("Invalid entry.")
