@@ -36,7 +36,7 @@ const double x = 2.50;
 const double gain = 101;
 const int voltageOffset = 1000;
 const double ambTempOffset = 2.2; //Celsius offset for ambient temp
-const double objTempOffset = -17; //Celsius offset for object temp
+const double objTempOffset = -11.8; //Celsius offset for object temp
 
 //Constants for ADC calculation
 const double adc_mV_offset = 12;
