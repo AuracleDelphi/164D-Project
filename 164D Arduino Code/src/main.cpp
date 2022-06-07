@@ -77,12 +77,15 @@ static float beatsPerMinute;
 static int beatAvg;
 static int threshold = 7000;
 
+//Declaration
+void oledDisplay(String msg, int textsize = 1, int posHorz = 25, int posVert=10);
+
 void BPM_setup()
 {
   // Initialize sensor
   if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) // Use default I2C port, 400kHz speed
   {
-    oledDisplay("MAX30105 was not found. Please check wiring/power.");
+    oledDisplay("MAX30105 was not found. Please check wiring/power.", 1, 0, 0);
     while (1);
   }
   byte ledBrightness = 55; // Options: 0=Off to 255=50mA
@@ -105,7 +108,7 @@ void Display_setup()
 
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // Start the OLED display
   display.display();
-  delay(3000);
+  delay(1500);
 }
 
 void setup()
@@ -123,40 +126,48 @@ void setup()
   
 }
 
-void oledDisplay(String msg)
+void oledDisplay(String msg, int textsize = 1, int posHorz = 25, int posVert=10)
 {
   display.clearDisplay();
-  display.setTextSize(1);
+  display.setTextSize(textsize);
   display.setTextColor(WHITE);
-  display.setCursor(0, 0);
-  display.println(msg);
+  display.setCursor(posHorz, posVert);
+  int screenlen = floor(21/textsize);
+  int msglen = msg.length();
+  int lastSpace = -1;
+  int splitSpace = 0;
+  while(lastSpace < msglen){
+    while (msg.indexOf(" ", splitSpace+1) - lastSpace < screenlen){
+      splitSpace = msg.indexOf(" ", splitSpace+1);
+      if (splitSpace == -1){
+        splitSpace = msglen;
+        break;
+      }
+    }
+    String a = msg.substring(lastSpace+1, splitSpace);
+    a.replace("^", " ");
+    display.println(a);
+    lastSpace = splitSpace;
+  }
   display.display();
 }
 
 // TODO: MAKE THIS FUNCTION WORK AS INTENDED
 void getAndDisplayBPM()
 {
+  oledDisplay("Switching into BPM mode", 1, 0, 10);
+  delay(1000);
+  oledDisplay("Please press firmly on the sensor and wait for a hot sec!", 1.5, 0, 5);
   /** Your code goes below here: Start **/
   particleSensor.check();
   long irValue = particleSensor.getIR(); // Reading the IR value to detect heartbeat and finger's placement on the sensor
   /** Your code goes above here: End **/
 
-  if (irValue > threshold) // If finger detected
+  while (irValue > threshold) // If finger detected
   { // If finger is placed and detected
+    particleSensor.check();
+    irValue = particleSensor.getIR();
     /** Your code goes below here: Start **/
-    display.clearDisplay(); // Clear the display
-    /** Your code goes above here: End **/
-    display.setTextSize(2); // Display the average BPM next to it
-    display.setTextColor(WHITE);
-    display.setCursor(50, 0);
-    display.println("BPM");
-    /** Your code goes below here: Start **/
-    display.setCursor(40, 20); // Put the coordinates for the beatAvg to be displayed on your OLED
-    display.setTextSize(1);    // Display the average BPM next to it
-    display.print(F("Beat Avg: "));
-    display.println(String(beatAvg));
-    ;                  // Print beatAvg on display
-    display.display(); // display the componenets mapped out in this segment
     Serial.print("BPM: ");
     Serial.println(beatAvg); // Print on serial monitor
     /** Your code goes above here: End **/
@@ -164,14 +175,13 @@ void getAndDisplayBPM()
     if (checkForBeat(irValue) == true) // If a heart beat is detected
     {
       /** Your code goes below here: Start **/
-      display.clearDisplay(); // Clear the display
-
       // Sensed a beat!
       long delta = millis() - lastBeat; // Measure duration between two beats
       lastBeat = millis();
 
       beatsPerMinute = 60 / (delta / 1000.0); // Calculate BPM
 
+      //DEBUGGING PRINT STATEMENT        
       if (beatsPerMinute < 255 && beatsPerMinute > 20) // Strore some values (4) and then calculate the average
       {
         rates[rateSpot++] = (byte)beatsPerMinute; // Store this reading in the array
@@ -179,46 +189,26 @@ void getAndDisplayBPM()
 
         // Take average of readings
         beatAvg = 0;
+        
         for (byte x = 0; x < RATE_SIZE; x++)
         {
           beatAvg += rates[x];
         }
         beatAvg /= RATE_SIZE;
+        oledDisplay("BPM: " + String(beatAvg), 2);
       }
-      display.setTextSize(2); // And still displays the average BPM
-      display.setTextColor(WHITE);
-      display.setCursor(50, 0);
-      display.println("BPM");
-      /** Your code goes below here: Start **/
-      display.setCursor(40, 20); // Put the coordinates for the beatAvg to be displayed on your OLED
-      display.setTextSize(1);
-      display.print(F("Beat Avg: "));
-      display.println(String(beatAvg));
-      ;                  // Print beatAvg on display
-      display.display(); // display the componenets mapped out in this segment
       Serial.print("BPM: ");
       Serial.println(beatAvg);
       /** Your code goes above here: End **/
     }
   }
-  if (irValue < threshold) // If no finger detected
-  { // If no finger is detected it inform the user and put the average BPM to 0 or it will be stored for the next measure
-    beatAvg = 0;
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setTextColor(WHITE);
-    /** Your code goes below here: Start **/
-    beatAvg = 0;
-    display.setCursor(10, 10); // command placement of finger
-    display.println("No finger detected");
-    display.setCursor(40, 20);
-    display.print(F("Beat Avg: "));
-    display.print(beatAvg); // Print beatAvg on display
-    display.display();
+  // If no finger is detected it inform the user and put the average BPM to 0 or it will be stored for the next measure
+  beatAvg = 0;
+  oledDisplay("No finger detected, returning to previous mode!", 1.5, 0, 5);
+  delay(1000);
 
-    Serial.println(irValue);
-    /** Your code goes above here: End **/
-  }
+  Serial.println(irValue);
+  /** Your code goes above here: End **/
 }
 
 bool writeBT(double objTemp, double ambTemp, double BPM, bool BPMMode)
@@ -341,19 +331,33 @@ void loop()
       // get temps
       double objTemp = getObjTemp();
       double ambTemp = getAmbTemp();
+      display.clearDisplay();
+      display.setTextSize(1.5);
+      display.setTextColor(WHITE);
+      display.setCursor(0, 0);
+      display.println("Ambient temp:");
+      display.println("    " + String(ambTemp, 4));
+      display.println("Object temp:");
+      display.println("    " + String(objTemp, 4));
+      display.display();
       // display on oled
-      oledDisplay("Ambient temp is " + String(ambTemp, 4) + " & obj temp is " + String(objTemp, 4));
     }
   }
-
   else{
     // get temps
     double objTemp = getObjTemp();
     double ambTemp = getAmbTemp();
     // display on oled
-    oledDisplay("Ambient temp is " + String(ambTemp, 4) + " & obj temp is " + String(objTemp, 4));
+    display.clearDisplay();
+    display.setTextSize(1.5);
+    display.setTextColor(WHITE);
+    display.setCursor(0, 0);
+    display.println("Ambient temp:");
+    display.println("    " + String(ambTemp, 4));
+    display.println("Object temp:");
+    display.println("    " + String(objTemp, 4));
+    display.display();
     // send over bluetooth
     writeBT(objTemp, ambTemp, 0, false);
-    
   }
 }
